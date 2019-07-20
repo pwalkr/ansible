@@ -1,0 +1,10 @@
+# Simple task to ensure /tmp is mounted as tmpfs (for performance and security)
+
+- name: Mount /tmp as tmpfs
+  mount:
+    src: tmpfs
+    path: /tmp
+    fstype: tmpfs
+    opts: nodev,nosuid
+    # This shouldn't be mounted right away, avoids hiding already-present files
+    state: present

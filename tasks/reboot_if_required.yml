@@ -1,0 +1,13 @@
+# Reboot for kernel or other systemic upgrades.
+
+# Currently supports debian-based distributions using apt
+
+- name: Check if reboot is required
+  shell: 'test -f /var/run/reboot-required'
+  register: reboot_required
+  failed_when: false
+  changed_when: reboot_required.rc == 0
+
+- name: Reboot if required
+  reboot:
+  when: reboot_required.changed
