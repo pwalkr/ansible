@@ -1,12 +1,14 @@
 # Reboot for kernel or other systemic upgrades.
 
-# Currently supports debian-based distributions using apt
+- include_vars: "{{ ansible_distribution }}.yml"
 
 - name: Check if reboot is required
-  shell: 'test -f /var/run/reboot-required'
+  command: '{{ reboot_test }}'
+  args:
+    warn: false
   register: reboot_required
   failed_when: false
-  changed_when: reboot_required.rc == 0
+  changed_when: reboot_required.rc == 1
 
 - name: Reboot if required
   reboot:

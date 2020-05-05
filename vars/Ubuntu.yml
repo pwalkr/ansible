@@ -1,0 +1,1 @@
+reboot_test: 'test ! -f /var/run/reboot-required'
