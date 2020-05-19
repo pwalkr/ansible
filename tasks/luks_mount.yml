@@ -1,17 +1,14 @@
 # Mount a luks-encrypted device
 #
-# This effectively extends the luks_device module to manage creating and
-# removing key file, and mounts the device.
-#
-# Specify vars on include to control the mount:
-#
-#     vars:
-#       luks_key: "{{ vault_luks_key }}"  # secret key string
-#       luks_device: sda2                 # path relative to /dev
-#       luks_name: lvx0    # Name of mount, presents as /dev/mapper/lvx0
-#       luks_mount: /media/decrypted      # Mount point
+# vars:
+#   luks_key: "{{ vault_luks_key }}"  # secret key string
+#   luks_device: sda2                 # path relative to /dev
+#   luks_name: lvx0    # Name of mount, presents as /dev/mapper/lvx0
+#   luks_mount: /media/decrypted      # Mount point
 
-- name: Check for mounted partition
+- include_tasks: luks_open.yml
+
+- name: Mount device
   mount:
     src: "/dev/mapper/{{ luks_name }}"
     path: "{{ luks_mount }}"
@@ -19,9 +16,3 @@
     opts: noauto
     fstype: auto
     state: mounted
-  check_mode: true
-  register: luks_mounted
-
-- name: Mount luks partition if unmounted
-  include_tasks: luks_mount_decrypt.yml
-  when: luks_mounted is changed

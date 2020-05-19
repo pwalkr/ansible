@@ -1,0 +1,29 @@
+# Open luks device using temporary keyfile
+
+- name: Create tmpfile for key file
+  tempfile:
+    state: file
+  register: keyfile
+  changed_when: false
+
+- block:
+    - name: Fill tmpfile
+      copy:
+        content: "{{ luks_key }}"
+        dest: "{{ keyfile.path }}"
+      changed_when: false
+
+    - name: Open luks device
+      luks_device:
+        device: "/dev/{{ luks_device }}"
+        state: opened
+        name: "{{ luks_name }}"
+        keyfile: "{{ keyfile.path }}"
+
+  always:
+    - name: Remove key file
+      file:
+        path: "{{ keyfile.path }}"
+        state: absent
+      when: keyfile.path is defined
+      changed_when: false
