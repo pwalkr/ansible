@@ -3,10 +3,16 @@
 # This effectively extends the luks_device module to manage creating and
 # removing key file.
 #
-# vars:
-#   luks_key: "{{ vault_luks_key }}"  # secret key string
-#   luks_device: sda2                 # path relative to /dev
-#   luks_name: lvx0    # Name of mount, presents as /dev/mapper/lvx0
+# Create device:
+#
+#   cryptsetup luksFormat /dev/device
+#
+# Configure role:
+#
+#   vars:
+#     luks_key: "{{ vault_luks_key }}"  # secret key string
+#     luks_device: sda2                 # path relative to /dev
+#     luks_name: lvx0    # Name of open device, presents as /dev/mapper/lvx0
 
 - name: Check for luks device
   stat:

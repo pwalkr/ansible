@@ -1,10 +1,19 @@
 # Mount a luks-encrypted device
 #
-# vars:
-#   luks_key: "{{ vault_luks_key }}"  # secret key string
-#   luks_device: sda2                 # path relative to /dev
-#   luks_name: lvx0    # Name of mount, presents as /dev/mapper/lvx0
-#   luks_mount: /media/decrypted      # Mount point
+# Create device:
+#
+#   cryptsetup luksFormat /dev/device
+#   # Initial open and format
+#   cryptsetup luksOpen /dev/device luks-device
+#   mkfs.xfs /dev/mapper/luks-device
+#
+# Configure role:
+#
+#   vars:
+#     luks_key: "{{ vault_luks_key }}"  # secret key string
+#     luks_device: sda2                 # path relative to /dev
+#     luks_name: lvx0    # Name of open device, presents as /dev/mapper/lvx0
+#     luks_mount: /media/decrypted      # Mount point
 
 - include_tasks: luks_open.yml
 
