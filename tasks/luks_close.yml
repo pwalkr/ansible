@@ -1,0 +1,9 @@
+# Close a luks-encrypted device
+#
+#   vars:
+#     luks_name: lvx0    # Name of open device, presents as /dev/mapper/lvx0
+
+- name: Close luks device
+  luks_device:
+    name: "{{ luks_name }}"
+    state: closed

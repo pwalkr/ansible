@@ -1,0 +1,14 @@
+# Unmount a luks-encrypted device
+#
+# Configure role:
+#
+#   vars:
+#     luks_name: lvx0    # Name of open device, presents as /dev/mapper/lvx0
+#     luks_mount: /media/decrypted      # Mount point
+
+- name: Unmount device
+  mount:
+    path: "{{ luks_mount }}"
+    state: unmounted
+
+- import_tasks: luks_close.yml
