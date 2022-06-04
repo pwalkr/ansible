@@ -1,8 +1,12 @@
-- name: Scan target for ssh keys
-  command: 'ssh-keyscan {{ target }}'
+- name: scan target for ssh keys
+  ansible.builtin.shell: 'ssh-keyscan {{ target }} | sort'
   register: key_scan
+  changed_when: no
+  check_mode: no
 
-- name: Add keys to current known_hosts
-  known_hosts:
-    name: "{{ target }}"
-    key: "{{ key_scan.stdout }}"
+- name: add keys to known_hosts
+  ansible.builtin.blockinfile:
+    path: '{{ known_hosts }}'
+    block: '{{ key_scan.stdout }}'
+    marker: '# {mark} {{ target }} KEY BLOCK'
+    backup: yes
