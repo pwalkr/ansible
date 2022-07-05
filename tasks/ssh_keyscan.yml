@@ -1,5 +1,5 @@
 - name: scan target for ssh keys
-  ansible.builtin.shell: 'ssh-keyscan {{ target }} | sort'
+  ansible.builtin.shell: 'ssh-keyscan -p {{ scan_port | default(22) }} -t {{ key_type | default("rsa,ecdsa,ed25519") }} {{ target }} | sort'
   register: key_scan
   changed_when: no
   check_mode: no
