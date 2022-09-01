@@ -1,0 +1,32 @@
+# Tasks to build an image after pulling to ensure cache is up-to-date. This
+# avoids rebuilding an image if the local copy was pruned, which would normally
+# recreate cache and produce/push a new image ID.
+#
+# Sample usage:
+#
+# - import_role:
+#     name: common
+#     tasks_from: docker_cached_build.yml
+#   vars:
+#     build_image: 'repository:tag'
+#     build_opts:
+#       path: '/path/to/dockerfile/dir'
+#       args:
+#         FOO: bar
+
+# Pull in case local cache was removed
+- name: 'pull {{ build_image }}'
+  community.docker.docker_image:
+    name: '{{ build_image }}'
+    source: pull
+  # Don't fail, in case this is first build
+  ignore_errors: yes
+
+# Building with cache_from will avoid rebuild even if image was pulled
+- name: 'build {{ build_image }}'
+  community.docker.docker_image:
+    name: '{{ build_image }}'
+    build: '{{ build_opts | combine({"cache_from":build_image}) }}'
+    source: build
+    force_source: yes
+    push: yes
