@@ -1,0 +1,32 @@
+# Find container instance in a swarm, e.g. for exec or for waiting on scale=0
+#
+# Intended for use with single-instance services
+#
+# Input: service_name
+# Output:
+#   container_node: name of node on which container runs
+#   container_id: id of container
+
+- name: 'find container for {{ service_name }}'
+  shell: |
+    container={{ service_name }}
+
+    {% raw %}
+    task_id=$(docker service ps $container --filter desired-state=running --format="{{.ID}}" | head -1)
+    test -n "$task_id" || exit 0
+    set -e
+    container_id=$(docker inspect $task_id --format="{{.Status.ContainerStatus.ContainerID}}")
+    node_id=$(docker inspect $task_id --format="{{.NodeID}}")
+    node_name=$(docker node ls --filter id=$node_id --format="{{.Hostname}}")
+    {% endraw %}
+
+    echo $container_id
+    echo $node_name
+  register: container
+  changed_when: container.stdout_lines | length == 2
+  check_mode: no
+
+- set_fact:
+    container_node: '{{ container.stdout_lines[1] }}'
+    container_id: '{{ container.stdout_lines[0] }}'
+  when: container is changed
