@@ -23,10 +23,10 @@
     echo $container_id
     echo $node_name
   register: container
-  changed_when: container.stdout_lines | length == 2
+  changed_when: false
   check_mode: no
 
 - set_fact:
-    container_node: '{{ container.stdout_lines[1] }}'
-    container_id: '{{ container.stdout_lines[0] }}'
-  when: container is changed
+    container_found: '{{ true if container.stdout_lines | length == 2 else false }}'
+    container_node: '{{ container.stdout_lines[1] if container.stdout_lines | length == 2 else null }}'
+    container_id: '{{ container.stdout_lines[0] if container.stdout_lines | length == 2 else null }}'
