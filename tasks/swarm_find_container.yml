@@ -12,6 +12,7 @@
     container={{ service_name }}
 
     {% raw %}
+    docker service ls >/dev/null || exit 1
     task_id=$(docker service ps $container --filter desired-state=running --format="{{.ID}}" | head -1)
     test -n "$task_id" || exit 0
     set -e
